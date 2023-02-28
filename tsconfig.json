@@ -22,8 +22,8 @@
     "noUnusedParameters": false,
     "noImplicitReturns": true,
     "declaration": true,
-    "declarationMap": true,
     "declarationDir": "build/types",
+    "outDir": "build",
     "jsx": "react-jsx",
     "rootDir": "src",
     "typeRoots": [
