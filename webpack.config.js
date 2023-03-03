@@ -1,23 +1,20 @@
 const path = require('path');
+const webpack = require('webpack');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
 const config = {
     entry: './src/index.ts',
-    experiments: {
-        outputModule: true,
-    },
     output: {
-       filename: 'index.js',
-       path: path.resolve(__dirname, 'build'),
-       library: {
-           type: 'module'
-       }
+        path: path.resolve(__dirname, 'build'),
+        filename: 'index.js',
+        library: 'NoriStore',
+        libraryTarget: 'umd'
     },
     module: {
         rules: [
             {
-                test: /\.(ts|tsx)$/i,
+                test: /\.(ts)$/i,
                 exclude: ['/node_modules/'],
                 loader: 'ts-loader',
             },
@@ -25,6 +22,9 @@ const config = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+    },
+    externals: {
+        react: 'commonjs react',
     },
 };
 
