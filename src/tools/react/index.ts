@@ -1,1 +1,1 @@
-export {createUseState} from './getUseState';
+export {createUseState} from './createUseState';

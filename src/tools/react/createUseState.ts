@@ -2,14 +2,14 @@ import { GeneralStoreType, NoriStore } from '../../core/noriStore';
 import { useEffect, useState } from 'react';
 
 export const createUseState = <T extends GeneralStoreType>(store: NoriStore<T>, subscribe = true) => {
-    return function <V extends keyof T>(...deps: V[]): Pick<T, V> {
-        const [ state, setState ] = useState<Pick<T, V>>(store.state);
+    return function <K extends keyof T>(...deps: K[]): Pick<T, K> {
+        const [ state, setState ] = useState<Pick<T, K>>(store.state);
 
         useEffect(() => {
             if (subscribe) {
                 return store.subscribe((state, prevState) => {
                     if (deps.length >= 1) {
-                        let changedValues = {} as Pick<T, V>;
+                        let changedValues = {} as Pick<T, K>;
                         deps.forEach((keyName) => void (changedValues[ keyName ] = state[ keyName ]));
 
                         const hasChanges = deps.some((keyName) => state[ keyName ] !== prevState[ keyName ]);

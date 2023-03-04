@@ -1,6 +1,6 @@
 {
   "name": "nori-store",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Store for JS and TS applications",
   "main": "./build/index.js",
   "types": "./build/types/index.d.ts",
@@ -15,7 +15,7 @@
     "build": "cross-env NODE_ENV=production webpack"
   },
   "keywords": [
-    "store"
+    "store", "react", "typescript", "state", "appstore"
   ],
   "author": "NORI",
   "license": "ISC",

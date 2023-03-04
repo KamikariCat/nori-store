@@ -16,11 +16,6 @@ To use `nori-store` in your web application, you can install it via npm:
 npm install nori-store --save
 ```
 
-Or you can include the library directly in your HTML file:
-```html
-<script src="nori-store.js"></script>
-```
-
 ## Getting Started
 To get started with `nori-store`, you need to create an instance of the store and configure it. Here's an example:
 
@@ -78,7 +73,7 @@ The returned hook takes a state deps array, which are state object keys. If the 
 ##### Usage
 `File with store and state`
 ```javascript
-import {NoriStore, createUseState} from 'nori-store';
+import {NoriStore, RactTools} from 'nori-store';
 
 const initialState = {
     id:         1,
