@@ -1,6 +1,6 @@
 {
   "name": "nori-store",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Store for JS and TS applications",
   "main": "./build/index.js",
   "types": "./build/types/index.d.ts",
@@ -28,7 +28,6 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "@babel/preset-react": "^7.18.6",
     "@types/react": "^18.0.28",
     "@webpack-cli/generators": "^3.0.1",
     "ts-loader": "^9.4.2",
