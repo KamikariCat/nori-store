@@ -79,7 +79,7 @@ You can use it in react using JS modules and mutate your date everywhere you wan
 #### Create the hook to subscribe your store
 
 ##### `createUseState(store, subscribe)`
-Creates a React hook that can be used to subscribe to changes in the state of the store. The `store` parameter is the store instance, and the `subscribe` parameter (optional `default: true`) is a boolean flag that determines whether or not the hook should subscribe to changes in the state.
+Creates a React hook that can be used to subscribe to changes in the state of the store. The `store` parameter is the store instance, and the `subscribe` parameter (optional `default: true`) is a boolean flag that determines whether the hook should subscribe to changes in the state.
 The returned hook takes a state deps array, which are state object keys. If the state deps are provided, the hook will only re-render when those specific keys change. If the state deps are empty, the hook will re-render every time the state changes.
 
 ##### Usage
