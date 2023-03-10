@@ -68,7 +68,10 @@ Subscribes to changes in the state of the store. The callback function will be c
 **Returns** a function that can be used to unsubscribe from changes in the state.
 
 ##### `setValues(partialState)`
-Updates the state with a partial state object.
+Updates the state with a partial state object and returns `state`.
+
+##### `setValuesAsync(partialState)`
+Updates the state with a partial state object and returns `Promise<state>`.
 
 ## React
 You can use it in react using JS modules and mutate your date everywhere you want.
