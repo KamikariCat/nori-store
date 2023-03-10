@@ -7,6 +7,7 @@
 - Save data in an object-based structure
 - Subscribe to changes in stored data
 - React to changes in stored data in real-time
+- Logs your state changes into console
 - Support for React hooks
 
 ## Installation
@@ -28,7 +29,11 @@ const initialState = {
     secondName: 'Doe',
 };
 
-const userStore = new NoriStore('user', initialState);
+const userStore = new NoriStore(
+    'user',
+    initialState,
+    { doLogs: false } // If you dont want to log your state changes
+);
 
 // The current state always is up-to-date
 console.log(userStore.state); // { id: 1, name: 'John', secondName: 'Doe' }
@@ -42,7 +47,11 @@ const unsubscribe = userStore.subscribe((state, prevState) => {
 // Update the state whatever you want
 userStore.state.name = 'Elon'; // Do not trigger subscribers
 userStore.state = {...userStore.state, name: 'Elon', secondName: 'Musk'}; // Trigger subscribers
+
 userStore.setValues({ name: 'Elon', secondName: 'Musk' });  // Trigger subscribers
+userStore.setValuesAsync({ name: 'Elon', secondName: 'Musk' })
+    .then(({id, name, secondName}) => ({id, name, secondName}))
+    .catch(error => error);  // Trigger subscribers and return Promice
 
 unsubscribe();
 ```
@@ -81,7 +90,11 @@ const initialState = {
     secondName: 'Doe',
 };
 
-export const userStore = new Store<typeof initialState>('User', initialState);
+export const userStore = new Store(
+    'User',
+    initialState,
+    { doLogs: false } // default is true
+);
 export const useUserState = createUseState(userStore);
 ```
 `Your component`

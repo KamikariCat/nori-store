@@ -1,5 +1,4 @@
 const path = require('path');
-const webpack = require('webpack');
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -22,6 +21,10 @@ const config = {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.jsx', '.js', '...'],
+        alias: {
+            react: path.resolve(__dirname, 'node_modules', 'react'),
+            'react-dom': path.resolve(__dirname, 'node_modules', 'react-dom')
+        }
     },
     externals: {
         react: 'commonjs react',

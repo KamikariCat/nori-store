@@ -1,6 +1,6 @@
 {
   "name": "nori-store",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Store for JS and TS applications",
   "main": "./build/index.js",
   "types": "./build/types/index.d.ts",
@@ -12,7 +12,8 @@
     "url": "https://github.com/KamikariCat/nori-store"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack"
+    "build": "cross-env NODE_ENV=production webpack",
+    "build:dev": "cross-env NODE_ENV=developnment webpack && npm pack"
   },
   "keywords": [
     "store", "react", "typescript", "state", "appstore"
