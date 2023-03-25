@@ -20,7 +20,6 @@ export const createUseState = <T extends GeneralStoreType | GeneralObjectType>(s
         useEffect(() => {
             if (opts.subscribe) {
                 return store.subscribe((state, prevState) => {
-                    console.log({deps: deps.length})
                     if (deps && deps.length >= 1 && state !== null) {
 
                         // @ts-ignore
