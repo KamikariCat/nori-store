@@ -1,10 +1,10 @@
 # Nori-Store - A Store Library
 
 `nori-store` is a lightweight and easy-to-use store library that allows you to save and subscribe to data in your web application. With `nori-store`, you can store data in an object-based structure, and subscribe to changes in the stored data, so your application can react in real-time when data is updated.
-
+__You create your application store with little states__
 ## Features
 
-- Save data in an object-based structure
+- Save data in an all types you wish
 - Subscribe to changes in stored data
 - React to changes in stored data in real-time
 - Logs your state changes into console
@@ -21,7 +21,7 @@ npm install nori-store --save
 To get started with `nori-store`, you need to create an instance of the store and configure it. Here's an example:
 
 ```javascript
-import {NoriStore} from 'nori-store';
+import { NoriState } from 'nori-store';
 
 const initialState = {
     id: 1,
@@ -29,14 +29,13 @@ const initialState = {
     secondName: 'Doe',
 };
 
-const userStore = new NoriStore(
-    'user',
+const userState = new NoriState(
     initialState,
-    { doLogs: false } // If you dont want to log your state changes
+    { name: 'user', doLogs: false } // If you dont want to log your state changes
 );
 
 // The current state always is up-to-date
-console.log(userStore.state); // { id: 1, name: 'John', secondName: 'Doe' }
+console.log(userState.state); // { id: 1, name: 'John', secondName: 'Doe' }
 
 // Subscribe to changes in the state
 const unsubscribe = userStore.subscribe((state, prevState) => {
@@ -45,11 +44,11 @@ const unsubscribe = userStore.subscribe((state, prevState) => {
 
 
 // Update the state whatever you want
-userStore.state.name = 'Elon'; // Do not trigger subscribers
-userStore.state = {...userStore.state, name: 'Elon', secondName: 'Musk'}; // Trigger subscribers
+userState.state.name = 'Elon'; // Do not trigger subscribers
+userState.state = {...userStore.state, name: 'Elon', secondName: 'Musk'}; // Trigger subscribers
 
-userStore.setValues({ name: 'Elon', secondName: 'Musk' });  // Trigger subscribers
-userStore.setValuesAsync({ name: 'Elon', secondName: 'Musk' })
+userState.setValue({ name: 'Elon', secondName: 'Musk' });  // Trigger subscribers
+userState.setAsyncValue({ name: 'Elon', secondName: 'Musk' })
     .then(({id, name, secondName}) => ({id, name, secondName}))
     .catch(error => error);  // Trigger subscribers and return Promice
 
@@ -60,17 +59,17 @@ unsubscribe();
 
 Here are the key functions and methods provided by `nori-store`:
 
-##### `NoriStore(name, initialState)`
+##### `NoriStore(initialState, options)`
 The constructor function for creating a new store instance. The `name` parameter is a string that represents the name of the store, and the `initialState` parameter is the initial state of the store. `initialState` should be an object with key-value pairs representing the initial data to store.
 
 ##### `subscribe((state, prevState) => {...})`
 Subscribes to changes in the state of the store. The callback function will be called whenever the state changes. It will be passed the new state and the previous state.
 **Returns** a function that can be used to unsubscribe from changes in the state.
 
-##### `setValues(partialState)`
+##### `setValue(partialState or your new value)`
 Updates the state with a partial state object and returns `state`.
 
-##### `setValuesAsync(partialState)`
+##### `setAsyncValue(partialState or your new value)`
 Updates the state with a partial state object and returns `Promise<state>`.
 
 ## React
@@ -78,12 +77,31 @@ You can use it in react using JS modules and mutate your date everywhere you wan
 
 #### Create the hook to subscribe your store
 
-##### `createUseState(store, subscribe)`
+##### `createUseState(state, options)`
 Creates a React hook that can be used to subscribe to changes in the state of the store. The `store` parameter is the store instance, and the `subscribe` parameter (optional `default: true`) is a boolean flag that determines whether the hook should subscribe to changes in the state.
 The returned hook takes a state deps array, which are state object keys. If the state deps are provided, the hook will only re-render when those specific keys change. If the state deps are empty, the hook will re-render every time the state changes.
 
+##### `createState(initialState, { state: NoriState options, hook: createUseState options })`
+
 ##### Usage
 `File with store and state`
+```javascript
+import {NoriState, RactTools} from 'nori-store';
+
+const initialState = {
+    id:         1,
+    name:       'John',
+    secondName: 'Doe',
+};
+
+export const userState = new Store(
+    'User',
+    initialState,
+    { doLogs: false } // default is true
+);
+export const useUserState = RactTools.createUseState(userState);
+```
+`or`
 ```javascript
 import {NoriStore, RactTools} from 'nori-store';
 
@@ -93,12 +111,7 @@ const initialState = {
     secondName: 'Doe',
 };
 
-export const userStore = new Store(
-    'User',
-    initialState,
-    { doLogs: false } // default is true
-);
-export const useUserState = createUseState(userStore);
+export const {state: userState, hook: useUserState} = ReactTools.createState(initialState);
 ```
 `Your component`
 ```javascript
