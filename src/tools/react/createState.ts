@@ -1,37 +1,13 @@
-import {
-    defaultNoriStoreOptions,
-    GeneralObjectType,
-    GeneralStoreType,
-    IStateOptions,
-    NoriState
-} from "../../core/noriState";
-import {
-    createUseState,
-    CreateUseStateHookType,
-    defaultCreateUseStateOptions,
-    ICreateUseStateOptions
-} from "./createUseState";
+import {defaultNoriStateOptions, GeneralObjectType, NoriState} from "../../core/nori-state";
+import {createUseState, defaultCreateUseStateOptions} from "./hooks/createUseState";
+import {CreateStateReturn, ICreateStateConfig} from "./types";
 
-export interface ICreateStateConfig {
-    state?: IStateOptions,
-    hook?: ICreateUseStateOptions
+export const createState = <T extends GeneralObjectType>(initialState: T, options?: ICreateStateConfig): CreateStateReturn<T> => {
+    const stateOptions = !options ? defaultNoriStateOptions : {...defaultNoriStateOptions, ...options}
+    const hookOptions = !options ? defaultCreateUseStateOptions : {...defaultCreateUseStateOptions, ...options}
+
+    const state = new NoriState(initialState, stateOptions);
+    const hook = createUseState(state, hookOptions);
+
+    return [state, hook]
 }
-
-type CreateStateReturn<T extends GeneralStoreType | GeneralObjectType> = {
-    state: NoriState<T>,
-    hook: CreateUseStateHookType<T>;
-};
-
-export const createState = <T extends GeneralStoreType | GeneralObjectType>(initialState: T, options?: ICreateStateConfig): CreateStateReturn<T> => {
-    const opts: ICreateStateConfig = {
-        state: { ...defaultNoriStoreOptions, ...options && options?.state || {} },
-        hook:  { ...defaultCreateUseStateOptions, ...options && options?.hook || {} }
-    }
-
-    const state = new NoriState(initialState, opts.state);
-
-    return {
-        state,
-        hook: createUseState(state, opts.hook),
-    }
-};

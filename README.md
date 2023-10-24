@@ -18,48 +18,56 @@ npm install nori-store --save
 ```
 
 ## Getting Started
+First and foremost, it's important to understand one thing: all data for initialState must be objects. Inside these objects, you can store whatever you like. You can think of NoriState as one independent piece of something larger, or you can create a large object that holds the entire state of your application and call it Store.
 To get started with `nori-store`, you need to create an instance of the store and configure it. Here's an example:
 
-```javascript
+```typescript
 import { NoriState } from 'nori-store';
 
-const initialState = {
-    id: 1,
+interface IInitialState {
+    id: string;
+    name: string;
+    secondName: string;
+}
+
+const initialState: IInitialState = {
+    id: 'some_uniq_id',
     name: 'John',
     secondName: 'Doe',
-};
+}
 
-const userState = new NoriState(
+const UserState = new NoriState(
     initialState,
-    { name: 'user', doLogs: false } // If you dont want to log your state changes
+    {
+        name: 'state-name', // if you don't set the name it gets random id
+        doLogs: true, // false is default
+        persist: true, // false is default
+    }
 );
 
 // The current state always is up-to-date
-console.log(userState.state); // { id: 1, name: 'John', secondName: 'Doe' }
+console.log(UserState.state); // { id: 1, name: 'John', secondName: 'Doe' }
 
 // Subscribe to changes in the state
-const unsubscribe = userStore.subscribe((state, prevState) => {
-    console.log(`State changed from ${JSON.stringify(prevState)} to ${JSON.stringify(state)}`);
+const unsubscribe = UserState.subscribe((state, prevState) => {
+    // Subscriber function triggers when UserState value has been changed
 })
 
+// removes subscriber
+unsubscribe()
 
-// Update the state whatever you want
-userState.state.name = 'Elon'; // Do not trigger subscribers
-userState.state = {...userStore.state, name: 'Elon', secondName: 'Musk'}; // Trigger subscribers
+UserState.value.id = 'some new id' // Subscriber won't be triggered
+UserState.value = {...UserState.value, name: 'Elon', secondName: 'Musk'} // Will trigger subscriber
+// I recommend to use this
+UserState.setValue({name: 'Elon', secondName: 'Musk'}) // UserState value and new object will be merged
 
-userState.setValue({ name: 'Elon', secondName: 'Musk' });  // Trigger subscribers
-userState.setAsyncValue({ name: 'Elon', secondName: 'Musk' })
-    .then(({id, name, secondName}) => ({id, name, secondName}))
-    .catch(error => error);  // Trigger subscribers and return Promice
-
-unsubscribe();
 ```
 
 ## Usage
 
 Here are the key functions and methods provided by `nori-store`:
 
-##### `NoriStore(initialState, options)`
+##### `NoriState(initialState, options)`
 The constructor function for creating a new store instance. The `name` parameter is a string that represents the name of the store, and the `initialState` parameter is the initial state of the store. `initialState` should be an object with key-value pairs representing the initial data to store.
 
 ##### `subscribe((state, prevState) => {...})`
@@ -85,36 +93,49 @@ The returned hook takes a state deps array, which are state object keys. If the 
 
 ##### Usage
 `File with store and state`
-```javascript
+```typescript
 import {NoriState, RactTools} from 'nori-store';
 
-const initialState = {
-    id:         1,
-    name:       'John',
-    secondName: 'Doe',
-};
+interface IInitialState {
+    id: string;
+    name: string;
+    secondName: string;
+}
 
-export const userState = new Store(
-    'User',
-    initialState,
-    { doLogs: false } // default is true
+const initialState: IInitialState = {
+    id: 'some_uniq_id',
+    name: 'John',
+    secondName: 'Doe',
+}
+
+export const userState = new NoriState(initialState);
+export const useUserState = RactTools.createUseState(
+    userState,
+    { subscribeOnHook: false }
+    // You can disable rerender by this hook
+    // when state value will be changed
 );
-export const useUserState = RactTools.createUseState(userState);
 ```
-`or`
-```javascript
+`or you can use one function for all`
+```typescript
 import {NoriStore, RactTools} from 'nori-store';
 
+interface IInitialState {
+    id: string;
+    name: string;
+    secondName: string;
+}
+
 const initialState = {
     id:         1,
     name:       'John',
     secondName: 'Doe',
 };
 
-export const {state: userState, hook: useUserState} = ReactTools.createState(initialState);
+export const [UserState, useUserState] = ReactTools.createState(initialState)
 ```
 `Your component`
-```javascript
+```tsx
 import React from 'react';
 import { useUserState } from './userStore';
 
@@ -133,7 +154,7 @@ export const Component = () => {
 };
 ```
 If you pass any field into useUserState you will get only this field(s)
-```javascript
+```tsx
 import React from 'react';
 import { useUserState } from '../../bus/client/user';
 

@@ -1,2 +1,2 @@
-export {createUseState} from './createUseState';
+export {createUseState} from './hooks/createUseState';
 export {createState} from './createState'

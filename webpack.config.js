@@ -8,7 +8,8 @@ const config = {
         path: path.resolve(__dirname, 'build'),
         filename: 'index.js',
         library: 'NoriStore',
-        libraryTarget: 'umd'
+        libraryTarget: 'umd',
+        globalObject: 'this',
     },
     module: {
         rules: [
