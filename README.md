@@ -9,6 +9,7 @@ __You create your application store with little states__
 - React to changes in stored data in real-time
 - Logs your state changes into console
 - Support for React hooks
+- Supports state persist (localStorage)
 
 ## Installation
 
@@ -42,6 +43,7 @@ const UserState = new NoriState(
         name: 'state-name', // if you don't set the name it gets random id
         doLogs: true, // false is default
         persist: true, // false is default
+        // The persist function adds a '[NS]' prefix to the name of your state and saves it in localStorage.
     }
 );
 
