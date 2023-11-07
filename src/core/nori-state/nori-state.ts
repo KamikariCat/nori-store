@@ -115,10 +115,22 @@ export class NoriState<T extends GeneralObjectType> {
                 console.warn('You need to set object values');
             }
 
-            return this.value;
+            return this._value;
         } catch (err) {
             throw new Error(String(err))
         }
+    }
+
+    public set <K extends keyof T>(key: K, value: T[K]): T {
+        const doesKeyExists = Object.hasOwn(this._value, key);
+
+        if (!doesKeyExists) {
+            console.warn(`This key ${String(key)} of your state does not exist`)
+            return this._value;
+        }
+
+        this._value = {...this._value, [key]: value};
+        return this._value
     }
 
     public async setAsyncValue (value: SetValueArgument<T>): Promise<T> {
