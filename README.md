@@ -62,6 +62,9 @@ UserState.value.id = 'some new id' // Subscriber won't be triggered
 UserState.value = {...UserState.value, name: 'Elon', secondName: 'Musk'} // Will trigger subscriber
 // I recommend to use this
 UserState.setValue({name: 'Elon', secondName: 'Musk'}) // UserState value and new object will be merged
+UserState // or this
+    .set('name', 'Elon')
+    .set('secondName', 'Musk')
 
 ```
 
