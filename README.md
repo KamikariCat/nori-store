@@ -186,7 +186,7 @@ export function useNoriState <T extends GeneralObjectType>(state: NoriState<T>, 
     const [currentState, setCurrentState] = useState(state.value);
 
     useEffect(() => {
-        state.subscribe((value, prevValue) => {
+        return state.subscribe((value, prevValue) => {
             const statedHasUpdated = options.some(option => value[option] !== prevValue[option]);
             if (!options.length || options.length && statedHasUpdated) {
                 setCurrentState(value);
