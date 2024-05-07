@@ -175,3 +175,28 @@ export const Component = () => {
     );
 };
 ```
+
+Custom subscription hook
+```tsx
+import {useEffect, useState} from "react";
+import {NoriState} from "nori-store";
+import {GeneralObjectType} from "nori-store/build/types/core/nori-state";
+
+export function useNoriState <T extends GeneralObjectType>(state: NoriState<T>, ...options: Array<keyof T>) {
+    const [currentState, setCurrentState] = useState(state.value);
+
+    useEffect(() => {
+        state.subscribe((value, prevValue) => {
+            const statedHasUpdated = options.some(option => value[option] !== prevValue[option]);
+            if (!options.length || options.length && statedHasUpdated) {
+                setCurrentState(value);
+            } else {
+                return;
+            }
+        })
+    }, [])
+
+    return currentState
+}
+
+```

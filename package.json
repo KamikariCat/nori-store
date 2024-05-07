@@ -1,6 +1,6 @@
 {
   "name": "nori-store",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Store for JS and TS applications",
   "main": "./build/index.js",
   "types": "./build/types/index.d.ts",

@@ -129,7 +129,7 @@ export class NoriState<T extends GeneralObjectType> {
             return this;
         }
 
-        this._value = {...this._value, [key]: value};
+        this.value = {...this._value, [key]: value};
         return this
     }
 
