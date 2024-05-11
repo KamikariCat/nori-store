@@ -13,7 +13,10 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
-    "build:dev": "cross-env NODE_ENV=developnment webpack && npm pack"
+    "build:dev": "cross-env NODE_ENV=developnment webpack && npm pack",
+    "patch": "npm version patch",
+    "minor": "npm version minor",
+    "major": "npm version major"
   },
   "keywords": [
     "nori-store",
