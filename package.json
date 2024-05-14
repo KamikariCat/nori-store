@@ -28,12 +28,7 @@
   ],
   "author": "NORI",
   "license": "ISC",
-  "peerDependencies": {
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0"
-  },
   "devDependencies": {
-    "@types/react": "^18.0.28",
     "@webpack-cli/generators": "^3.0.1",
     "cross-env": "^7.0.3",
     "ts-loader": "^9.4.2",
