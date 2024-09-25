@@ -89,94 +89,7 @@ Updates the state with a partial state object and returns `Promise<state>`.
 You can use it in react using JS modules and mutate your date everywhere you want.
 
 #### Create the hook to subscribe your store
-
-##### `createUseState(state, options)`
-Creates a React hook that can be used to subscribe to changes in the state of the store. The `store` parameter is the store instance, and the `subscribe` parameter (optional `default: true`) is a boolean flag that determines whether the hook should subscribe to changes in the state.
-The returned hook takes a state deps array, which are state object keys. If the state deps are provided, the hook will only re-render when those specific keys change. If the state deps are empty, the hook will re-render every time the state changes.
-
-##### `createState(initialState, { state: NoriState options, hook: createUseState options })`
-
-##### Usage
-`File with store and state`
-```typescript
-import {NoriState, RactTools} from 'nori-store';
-
-interface IInitialState {
-    id: string;
-    name: string;
-    secondName: string;
-}
-
-const initialState: IInitialState = {
-    id: 'some_uniq_id',
-    name: 'John',
-    secondName: 'Doe',
-}
-
-export const userState = new NoriState(initialState);
-export const useUserState = RactTools.createUseState(
-    userState,
-    { subscribeOnHook: false }
-    // You can disable rerender by this hook
-    // when state value will be changed
-);
-```
-`or you can use one function for all`
-```typescript
-import {NoriStore, RactTools} from 'nori-store';
-
-interface IInitialState {
-    id: string;
-    name: string;
-    secondName: string;
-}
-
-const initialState = {
-    id:         1,
-    name:       'John',
-    secondName: 'Doe',
-};
-
-export const [UserState, useUserState] = ReactTools.createState(initialState)
-```
-`Your component`
-```tsx
-import React from 'react';
-import { useUserState } from './userStore';
-
-export const Component = () => {
-    // It is triggered every time any user field changes
-    // You can get every field if useUserState arguments is empty
-    const { id, name, secondName } = useUserState();
-
-    return (
-        <div>
-            <p>User id {id}</p>
-            <p>User name {name}</p>
-            <p>User second name {secondName}</p>
-        </div>
-    );
-};
-```
-If you pass any field into useUserState you will get only this field(s)
-```tsx
-import React from 'react';
-import { useUserState } from '../../bus/client/user';
-
-export const Component = () => {
-    // Triggers always when changed one of all user fields
-    // If you change users second name the hook won't trigger
-    const { name } = useUserState('name');
-
-    return (
-        <div>
-            <p>User id {name}</p>
-        </div>
-    );
-};
-```
-
-Custom subscription hook
+__*As peer dependency react has been removed from `nori-store`.*__
 ```tsx
 import {useEffect, useState} from "react";
 import {NoriState} from "nori-store";
@@ -198,5 +111,45 @@ export function useNoriState <T extends GeneralObjectType>(state: NoriState<T>, 
 
     return currentState
 }
+```
+##### Usage
+`File with state`
+```typescript
+import {NoriState, RactTools} from 'nori-store';
 
+interface IInitialState {
+    id: string;
+    name: string;
+    secondName: string;
+}
+
+const initialState: IInitialState = {
+    id: 'some_uniq_id',
+    name: 'John',
+    secondName: 'Doe',
+}
+
+export const UserState = new NoriState(initialState);
+```
+`Your component`
+```tsx
+import React from 'react';
+import { useNoriState } from 'nori-store';
+
+export const Component = () => {
+    // It is triggered every time any user field changes
+    // You can get every field if useUserState arguments is empty
+    const { id, name, secondName } = useNoriState(UserState);
+    
+    // If you pass any field into useUserState args your component will rerendered if one of this field will change
+    // const { id } = useNoriState(UserState, 'id');
+
+    return (
+        <div>
+            <p>User id {id}</p>
+            <p>User name {name}</p>
+            <p>User second name {secondName}</p>
+        </div>
+    );
+};
 ```
