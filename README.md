@@ -85,6 +85,75 @@ Updates the state with a partial state object and returns `state`.
 ##### `setAsyncValue(partialState or your new value)`
 Updates the state with a partial state object and returns `Promise<state>`.
 
+## Middleware
+
+Middleware in `nori-store` allows you to intercept state changes and perform additional actions before the state is updated. This is useful for validation, logging, asynchronous operations, or any pre-checks required before applying a new state.
+
+### Adding Middleware
+
+To add middleware, use the `.use()` method. Each middleware function receives three arguments:
+
+1. **`newState`** — The proposed new state.
+2. **`prevState`** — The current state.
+3. **`next`** — A function that allows the state update to proceed.
+
+If `next()` is not called, the state **will not be updated**.
+
+---
+
+### Usage Example
+
+#### Basic Synchronous Middleware
+
+```ts
+import { NoriState } from 'nori-store';
+
+const state = new NoriState({ count: 0 }, { name: 'counter' });
+
+// Add middleware for value validation
+state.use((newState, prevState, next) => {
+    if (newState.count >= 0) {
+        next(); // Allow state update
+    } else {
+        console.warn('Count cannot be negative');
+    }
+});
+
+state.set('count', 5); // State will update
+console.log(state.value); // { count: 5 }
+
+state.set('count', -1); // State will not update
+console.log(state.value); // { count: 5 }
+```
+
+#### Multiple middlewares
+```ts
+state.use((newState, _, next) => {
+    console.log('Middleware 1:', newState);
+    next();
+});
+
+state.use((newState, _, next) => {
+    if (newState.count % 2 === 0) {
+        console.log('Middleware 2: Count is even');
+        next();
+    } else {
+        console.warn('Count must be even!');
+    }
+});
+
+state.set('count', 4); // Both middleware will execute
+// Output:
+// Middleware 1: { count: 4 }
+// Middleware 2: Count is even
+
+state.set('count', 3); // Second middleware stops the update
+// Output:
+// Middleware 1: { count: 3 }
+// Count must be even!
+
+```
+
 ## React
 You can use it in react using JS modules and mutate your date everywhere you want.
 
