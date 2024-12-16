@@ -1,0 +1,8 @@
+{
+    "editor.defaultFoldingRangeProvider": null,
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+    "notebook.defaultFormatter": "dbaeumer.vscode-eslint",
+    "eslint.debug": true,
+    "eslint.format.enable": true,
+    "editor.formatOnSave": true
+}

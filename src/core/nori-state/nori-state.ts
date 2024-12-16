@@ -1,15 +1,20 @@
-import {isCustomObject} from "../../tools/helpers/objects";
-import {generateRandomId} from "../../tools/helpers/random";
+import { isCustomObject } from '../../tools/helpers/objects';
+import { generateRandomId } from '../../tools/helpers/random';
+
+export type MiddlevareFunction<T> = (
+    state: T,
+    prevState: T,
+    next: () => void
+) => void;
 
 export type GeneralObjectType = Record<string, any>;
 
 export type IsGeneralObjectType<T> = T extends GeneralObjectType ? true : false;
-type SetValueArgument<T> = IsGeneralObjectType<T> extends true ? Partial<T> : T;
 
 type SubscriberType<T> = (state: T, prevState: T) => void;
 
 export interface IStateOptions {
-    name?: string,
+    name?: string;
     doLogs?: boolean;
     persist?: boolean;
 }
@@ -18,35 +23,43 @@ export const defaultNoriStateOptions: IStateOptions = {
     name: '',
     doLogs: false,
     persist: false,
-}
+};
 
 export class NoriState<T extends GeneralObjectType> {
     private _subscribers = new Set<SubscriberType<T>>();
-    private options: IStateOptions
+    private _middlewares: MiddlevareFunction<T>[] = [];
+    private options: IStateOptions;
     private _value: T;
 
-    constructor (initialState: T, options?: IStateOptions) {
-        if (!isCustomObject(initialState))
+    constructor(initialState: T, options?: IStateOptions) {
+        if (!isCustomObject(initialState)) {
             throw new Error(`Your initialState is not an object`);
+        }
 
-        this.options = { ...defaultNoriStateOptions, ...options || {} };
+        this.options = { ...defaultNoriStateOptions, ...(options || {}) };
         this._value = initialState;
 
-        if (this.options.persist && !this.options.name)
-            throw new Error('You need to set the name of this state when enable persist')
+        if (this.options.persist && !this.options.name) {
+            throw new Error(
+                'You need to set the name of this state when enable persist'
+            );
+        }
 
-        if (!this.options.name)
+        if (!this.options.name) {
             this.options.name = generateRandomId(8);
+        }
 
         if (this.options.persist) {
-            const persistedStorageValue = localStorage.getItem(this.persistedName)
+            const persistedStorageValue = localStorage.getItem(
+                this.persistedName
+            );
             if (!persistedStorageValue) {
                 this._value = initialState;
             } else {
                 try {
-                    this._value = JSON.parse(this.persistedName)
+                    this._value = JSON.parse(persistedStorageValue);
                 } catch (error) {
-                    console.error(error)
+                    console.error(error);
 
                     this._value = initialState;
                 }
@@ -55,32 +68,60 @@ export class NoriState<T extends GeneralObjectType> {
             this._value = initialState;
         }
 
-
         if (this.options.doLogs) {
-            console.log(`Initial: "${this.options.name}"`, {[this.options.name]:this._value});
+            console.log(`Initial: "${this.options.name}"`, {
+                [this.options.name]: this._value,
+            });
         }
     }
 
-    public get name () {
+    public get name() {
         return this.options.name;
     }
 
-    protected logState (current: T, prev: T): void {
-        if (!this.options.doLogs) return;
-        console.log(`Store: "${this.options.name}"`, { current, prev })
+    public use(middleware: MiddlevareFunction<T>) {
+        this._middlewares.push(middleware);
+
+        return this;
     }
-     public get persistedName () {
+
+    protected logState(current: T, prev: T): void {
+        if (!this.options.doLogs) {
+            return;
+        }
+        console.log(`Store: "${this.options.name}"`, { current, prev });
+    }
+
+    public get persistedName() {
         return `[NS]${this.options.name}`;
-     }
+    }
 
     // === === === State === === ===
-    public get value () {
+    public get value() {
         return this._value;
     }
 
-    public set value (value: T) {
+    private runMiddlewares(
+        middlewares: MiddlevareFunction<T>[],
+        newState: T
+    ): boolean {
+        let canContinue = true;
+
+        for (const middleware of middlewares) {
+            canContinue = false;
+
+            // eslint-disable-next-line no-loop-func
+            middleware(newState, this._value, () => void (canContinue = true));
+        }
+
+        return canContinue;
+    }
+
+    public set value(value: T) {
         if (this._subscribers.size >= 1) {
-            this._subscribers.forEach((subscriber) => subscriber(value, this._value));
+            this._subscribers.forEach((subscriber) =>
+                subscriber(value, this._value)
+            );
         }
 
         this.logState(value, this._value);
@@ -88,67 +129,78 @@ export class NoriState<T extends GeneralObjectType> {
         this._value = value;
         if (this.options.persist) {
             try {
-                localStorage.setItem(this.persistedName, JSON.stringify(this._value));
+                localStorage.setItem(
+                    this.persistedName,
+                    JSON.stringify(this._value)
+                );
             } catch (error) {
                 console.error(error);
             }
         }
     }
 
-    public subscribe (subscriber: SubscriberType<T>) {
+    public subscribe(subscriber: SubscriberType<T>) {
         this._subscribers.add(subscriber);
 
         return () => void this._subscribers.delete(subscriber);
     }
 
-    public setValue (value: Partial<T> | T): T {
+    public setValue(value: Partial<T> | T): T {
         const isStateAnObject = isCustomObject(this.value);
         const isValueAnObject = isCustomObject(value);
 
-        try {
-            if (isStateAnObject && isValueAnObject) {
-                (this.value as GeneralObjectType) = {
-                    ...this.value as GeneralObjectType,
-                    ...value as GeneralObjectType
-                };
-            } else {
-                console.warn('You need to set object values');
-            }
-
-            return this._value;
-        } catch (err) {
-            throw new Error(String(err))
+        if (!isStateAnObject || !isValueAnObject) {
+            throw new TypeError('You need to set object values');
         }
+
+        const newValue = {
+            ...(this._value as GeneralObjectType),
+            ...(value as GeneralObjectType),
+        };
+
+        if (this._middlewares.length) {
+            const middlewareAcception = this.runMiddlewares(
+                this._middlewares,
+                newValue as T
+            );
+            if (!middlewareAcception) {
+                return this.value;
+            }
+        }
+
+        (this.value as GeneralObjectType) = newValue;
+
+        return this._value;
     }
 
-    public set <K extends keyof T>(key: K, value: T[K]): NoriState<T> {
+    public set<K extends keyof T>(key: K, value: T[K]): NoriState<T> {
         const doesKeyExists = Object.hasOwn(this._value, key);
 
         if (!doesKeyExists) {
-            console.warn(`This key ${String(key)} of your state does not exist`)
+            console.warn(
+                `This key ${String(key)} of your state does not exist`
+            );
+
             return this;
         }
 
-        this.value = {...this._value, [key]: value};
-        return this
-    }
+        const newValue = { ...this._value, [key]: value };
 
-    public async setAsyncValue (value: SetValueArgument<T>): Promise<T> {
-        return Promise.resolve(this.setValue(value));
-    }
+        if (this._middlewares.length) {
+            const middlewareAcception = this.runMiddlewares(
+                this._middlewares,
+                newValue as T
+            );
 
-    public setName (value: string) {
-        this.options.name = value;
-        return this;
-    }
+            if (middlewareAcception) {
+                this.value = newValue;
+            }
 
-    public setDoLogs (value: boolean) {
-        this.options.doLogs = value;
-        return this;
-    }
+            return this;
+        }
 
-    public setPersist (value: boolean) {
-        this.options.persist = value;
+        this.value = newValue;
+
         return this;
     }
 }
