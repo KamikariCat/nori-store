@@ -1,7 +1,8 @@
-# Nori-Store - A Store Library
+# Nori-Store - A lightwait state manager
 
-`nori-store` is a lightweight and easy-to-use store library that allows you to save and subscribe to data in your web application. With `nori-store`, you can store data in an object-based structure, and subscribe to changes in the stored data, so your application can react in real-time when data is updated.
+`nori-store` allows you to save and subscribe to data in your web application. With `nori-store`, you can store data in an object-based structure, and subscribe to changes in the stored data, so your application can react in real-time when data is updated.
 __You create your application store with little states__
+
 ## Features
 
 - Save data in an all types you wish
@@ -9,7 +10,8 @@ __You create your application store with little states__
 - React to changes in stored data in real-time
 - Logs your state changes into console
 - Support for React hooks
-- Supports state persist (localStorage)
+- Supports state persist (localStorage in browser only)
+- Supports middlewares
 
 ## Installation
 
@@ -157,7 +159,8 @@ state.set('count', 3); // Second middleware stops the update
 ## React
 You can use it in react using JS modules and mutate your date everywhere you want.
 
-#### Create the hook to subscribe your store
+#### Create the hook to subscribe your store **
+
 __*As peer dependency react has been removed from `nori-store`.*__
 ```tsx
 import {useEffect, useState} from "react";
