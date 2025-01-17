@@ -1,3 +1,4 @@
+import { isBrowser } from '../../tools/helpers/isBrowser';
 import { isCustomObject } from '../../tools/helpers/objects';
 import { generateRandomId } from '../../tools/helpers/random';
 
@@ -49,7 +50,7 @@ export class NoriState<T extends GeneralObjectType> {
             this.options.name = generateRandomId(8);
         }
 
-        if (this.options.persist) {
+        if (this.options.persist && isBrowser()) {
             const persistedStorageValue = localStorage.getItem(
                 this.persistedName
             );
