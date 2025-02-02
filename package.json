@@ -1,13 +1,9 @@
 {
     "name": "nori-store",
-    "version": "2.1.3",
+    "version": "2.1.4",
     "description": "Store for JS and TS applications",
     "main": "./build/index.js",
     "types": "./build/types/index.d.ts",
-    "exports": {
-        "import": "./build/index.js",
-        "require": "./build/index.js"
-    },
     "files": [
         "build"
     ],
