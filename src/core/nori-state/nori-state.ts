@@ -2,7 +2,7 @@ import { isBrowser } from '../../tools/helpers/isBrowser';
 import { isCustomObject } from '../../tools/helpers/objects';
 import { generateRandomId } from '../../tools/helpers/random';
 
-export type MiddlevareFunction<T> = (
+export type MiddlewareFunction<T> = (
     state: T,
     prevState: T,
     next: () => void
@@ -28,7 +28,7 @@ export const defaultNoriStateOptions: IStateOptions = {
 
 export class NoriState<T extends GeneralObjectType> {
     private _subscribers = new Set<SubscriberType<T>>();
-    private _middlewares: MiddlevareFunction<T>[] = [];
+    private _middlewares: MiddlewareFunction<T>[] = [];
     private options: IStateOptions;
     private _value: T;
 
@@ -80,7 +80,7 @@ export class NoriState<T extends GeneralObjectType> {
         return this.options.name;
     }
 
-    public use(middleware: MiddlevareFunction<T>) {
+    public use(middleware: MiddlewareFunction<T>) {
         this._middlewares.push(middleware);
 
         return this;
@@ -103,7 +103,7 @@ export class NoriState<T extends GeneralObjectType> {
     }
 
     private runMiddlewares(
-        middlewares: MiddlevareFunction<T>[],
+        middlewares: MiddlewareFunction<T>[],
         newState: T
     ): boolean {
         let canContinue = true;
